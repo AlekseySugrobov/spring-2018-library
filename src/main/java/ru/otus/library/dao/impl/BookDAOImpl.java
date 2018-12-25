@@ -1,6 +1,8 @@
 package ru.otus.library.dao.impl;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.library.dao.BookDAO;
@@ -13,13 +15,15 @@ import java.util.*;
 public class BookDAOImpl implements BookDAO {
 
     private final NamedParameterJdbcOperations jdbc;
+    private final RowMapper<Book> rowMapper;
 
-    public BookDAOImpl(NamedParameterJdbcOperations jdbcOperations) {
+    public BookDAOImpl(NamedParameterJdbcOperations jdbcOperations, RowMapper<Book> rowMapper) {
         this.jdbc = jdbcOperations;
+        this.rowMapper = rowMapper;
     }
 
     @Override
-    public void edit(Book entity) {
+    public void save(Book entity) {
         final Map<String, Object> params = new HashMap<>();
         params.put("id", entity.getId());
         params.put("name", entity.getName());
@@ -36,7 +40,7 @@ public class BookDAOImpl implements BookDAO {
     public Optional<Book> getById(long id) {
         final Map<String, Long> params = Collections.singletonMap("id", id);
         try {
-            return Optional.ofNullable(jdbc.queryForObject("select id as id, name as name, genre_id as genreId, author_id as authorId from books where id=:id", params, BookMapper.INSTANCE));
+            return Optional.ofNullable(jdbc.queryForObject("select id as id, name as name, genre_id as genreId, author_id as authorId from books where id=:id", params, rowMapper));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -45,7 +49,7 @@ public class BookDAOImpl implements BookDAO {
     @Override
     public List<Book> getAll() {
         try {
-            return jdbc.query("select id as id, name as name, genre_id as genreId, author_id as authorId from books", BookMapper.INSTANCE);
+            return jdbc.query("select id as id, name as name, genre_id as genreId, author_id as authorId from books", rowMapper);
         } catch (EmptyResultDataAccessException ex) {
             return new ArrayList<>();
         }

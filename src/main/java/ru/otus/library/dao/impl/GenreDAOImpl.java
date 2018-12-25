@@ -1,6 +1,7 @@
 package ru.otus.library.dao.impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.library.dao.GenreDAO;
@@ -13,13 +14,15 @@ import java.util.*;
 public class GenreDAOImpl implements GenreDAO {
 
     private final NamedParameterJdbcOperations jdbc;
+    private final RowMapper<Genre> rowMapper;
 
-    public GenreDAOImpl(NamedParameterJdbcOperations jdbcOperations) {
+    public GenreDAOImpl(NamedParameterJdbcOperations jdbcOperations, RowMapper<Genre> rowMapper) {
         this.jdbc = jdbcOperations;
+        this.rowMapper = rowMapper;
     }
 
     @Override
-    public void edit(Genre entity) {
+    public void save(Genre entity) {
         final Map<String, Object> params = new HashMap<>(2);
         params.put("id", entity.getId());
         params.put("name", entity.getName());
@@ -34,7 +37,7 @@ public class GenreDAOImpl implements GenreDAO {
     public Optional<Genre> getById(long id) {
         final Map<String, Long> params = Collections.singletonMap("id", id);
         try {
-            return Optional.ofNullable(jdbc.queryForObject("select * from genres where id=:id", params, GenreMapper.INSTANCE));
+            return Optional.ofNullable(jdbc.queryForObject("select * from genres where id=:id", params, rowMapper));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -43,7 +46,7 @@ public class GenreDAOImpl implements GenreDAO {
     @Override
     public List<Genre> getAll() {
         try {
-            return jdbc.query("select * from genres", GenreMapper.INSTANCE);
+            return jdbc.query("select * from genres", rowMapper);
         } catch (EmptyResultDataAccessException ex) {
             return new ArrayList<>();
         }

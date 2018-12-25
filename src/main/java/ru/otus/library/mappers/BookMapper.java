@@ -1,14 +1,14 @@
 package ru.otus.library.mappers;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 import ru.otus.library.domain.Book;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class BookMapper implements RowMapper<Book> {
-
-    public static final BookMapper INSTANCE = new BookMapper();
 
     @Override
     public Book mapRow(ResultSet resultSet, int i) throws SQLException {

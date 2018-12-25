@@ -12,7 +12,6 @@ import ru.otus.library.service.InputService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Service
 public class InputServiceImpl implements InputService {
@@ -32,17 +31,17 @@ public class InputServiceImpl implements InputService {
     public void editBook(Book book) throws UserInputProcessException {
         handleGenre(book.getGenreId(), "Введен не существующий жанр.");
         handleAuthor(book.getAuthorId(), "Введен не существующий автор");
-        bookDAO.edit(book);
+        bookDAO.save(book);
     }
 
     @Override
     public void editAuthor(Author author) {
-        authorDAO.edit(author);
+        authorDAO.save(author);
     }
 
     @Override
     public void editGenre(Genre genre) {
-        genreDAO.edit(genre);
+        genreDAO.save(genre);
     }
 
     @Override

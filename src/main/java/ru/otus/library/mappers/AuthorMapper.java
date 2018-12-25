@@ -1,14 +1,14 @@
 package ru.otus.library.mappers;
 
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
 import ru.otus.library.domain.Author;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Component
 public class AuthorMapper implements RowMapper<Author> {
-
-    public static final AuthorMapper INSTANCE = new AuthorMapper();
 
     @Override
     public Author mapRow(ResultSet resultSet, int i) throws SQLException {

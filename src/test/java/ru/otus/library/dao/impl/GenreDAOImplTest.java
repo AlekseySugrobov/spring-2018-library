@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.library.dao.GenreDAO;
 import ru.otus.library.domain.Genre;
@@ -18,6 +20,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false"})
 @DisplayName("Тесты GenreDAO")
+@SqlGroup({
+        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = {"classpath:testschema.sql", "classpath:testdata.sql"})
+})
 public class GenreDAOImplTest {
 
     @Autowired
@@ -27,7 +32,7 @@ public class GenreDAOImplTest {
     @DisplayName("Тест создания жанра")
     public void edit() {
         Genre genre = new Genre(2L, "GENRE2");
-        dao.edit(genre);
+        dao.save(genre);
         Optional<Genre> currentGenre = dao.getById(2);
         assertThat(currentGenre.isPresent()).isTrue();
     }
@@ -43,14 +48,14 @@ public class GenreDAOImplTest {
     @DisplayName("Тест получения всех жанров")
     public void getAll() {
         List<Genre> allGenres = dao.getAll();
-        assertThat(allGenres).isNotNull();
+        assertThat(allGenres).hasSize(1);
     }
 
     @Test
     @DisplayName("Тест удаления жанра")
     public void delete() {
         Genre genre = new Genre(2L, "GENRE2");
-        dao.edit(genre);
+        dao.save(genre);
         dao.delete(2);
         Optional<Genre> currentGenre = dao.getById(2);
         assertThat(currentGenre.isPresent()).isFalse();

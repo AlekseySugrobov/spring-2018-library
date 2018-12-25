@@ -1,6 +1,7 @@
 package ru.otus.library.dao.impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 import ru.otus.library.dao.AuthorDAO;
@@ -13,13 +14,15 @@ import java.util.*;
 public class AuthorDAOImpl implements AuthorDAO {
 
     private final NamedParameterJdbcOperations jdbc;
+    private final RowMapper<Author> rowMapper;
 
-    public AuthorDAOImpl(NamedParameterJdbcOperations jdbcOperations) {
+    public AuthorDAOImpl(NamedParameterJdbcOperations jdbcOperations, RowMapper<Author> rowMapper) {
         this.jdbc = jdbcOperations;
+        this.rowMapper = rowMapper;
     }
 
     @Override
-    public void edit(Author entity) {
+    public void save(Author entity) {
         final Map<String, Object> params = new HashMap<>(2);
         params.put("id", entity.getId());
         params.put("name", entity.getName());
@@ -34,7 +37,7 @@ public class AuthorDAOImpl implements AuthorDAO {
     public Optional<Author> getById(long id) {
         final Map<String, Long> params = Collections.singletonMap("id", id);
         try {
-            return Optional.ofNullable(jdbc.queryForObject("select * from authors where id=:id", params, AuthorMapper.INSTANCE));
+            return Optional.ofNullable(jdbc.queryForObject("select * from authors where id=:id", params, rowMapper));
         } catch (EmptyResultDataAccessException ex) {
             return Optional.empty();
         }
@@ -43,7 +46,7 @@ public class AuthorDAOImpl implements AuthorDAO {
     @Override
     public List<Author> getAll() {
         try {
-            return jdbc.query("select * from authors", AuthorMapper.INSTANCE);
+            return jdbc.query("select * from authors", rowMapper);
         } catch (EmptyResultDataAccessException ex) {
             return new ArrayList<>();
         }
