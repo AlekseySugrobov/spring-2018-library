@@ -4,4 +4,3 @@ spring:
     username: postgres
     password: rkg7mnNhfyr
     driver-class-name: org.postgresql.Driver
-    initialization-mode: always
