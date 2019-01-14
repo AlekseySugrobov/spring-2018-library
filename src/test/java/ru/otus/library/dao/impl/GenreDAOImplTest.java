@@ -1,5 +1,6 @@
 package ru.otus.library.dao.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.library.dao.GenreDAO;
+import ru.otus.library.domain.Author;
 import ru.otus.library.domain.Genre;
 
 import java.util.List;
@@ -28,6 +30,12 @@ public class GenreDAOImplTest {
     @Autowired
     private GenreDAO dao;
 
+    @BeforeEach
+    public void setUp() {
+        Genre genre = new Genre(2L, "AUTHOR2");
+        dao.save(genre);
+    }
+
     @Test
     @DisplayName("Тест создания жанра")
     public void edit() {
@@ -40,7 +48,7 @@ public class GenreDAOImplTest {
     @Test
     @DisplayName("Тест полчения жанра по ID")
     public void getById() {
-        Optional<Genre> currentGenre = dao.getById(1);
+        Optional<Genre> currentGenre = dao.getById(2);
         assertThat(currentGenre.isPresent()).isTrue();
     }
 
@@ -54,8 +62,6 @@ public class GenreDAOImplTest {
     @Test
     @DisplayName("Тест удаления жанра")
     public void delete() {
-        Genre genre = new Genre(2L, "GENRE2");
-        dao.save(genre);
         dao.delete(2);
         Optional<Genre> currentGenre = dao.getById(2);
         assertThat(currentGenre.isPresent()).isFalse();

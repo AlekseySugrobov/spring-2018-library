@@ -1,5 +1,7 @@
 package ru.otus.library.dao.impl;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +12,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.library.dao.BookDAO;
+import ru.otus.library.domain.Author;
 import ru.otus.library.domain.Book;
+import ru.otus.library.domain.Genre;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,10 +32,20 @@ public class BookDAOImplTest {
     @Autowired
     private BookDAO dao;
 
+    @BeforeEach
+    public void setUp() {
+        Author author = new Author(1L, "Author1");
+        Genre genre = new Genre(1L, "Genre1");
+        Book book = new Book(2L, "BOOK2", author, genre);
+        dao.save(book);
+    }
+
     @Test
     @DisplayName("Тест создания книги")
     public void edit() {
-        Book book = new Book(2L, "BOOK2", 1L, 1L);
+        Author author = new Author(1L, "Author1");
+        Genre genre = new Genre(1L, "Genre1");
+        Book book = new Book(2L, "BOOK2", author, genre);
         dao.save(book);
         Optional<Book> currentBook = dao.getById(2);
         assertThat(currentBook.isPresent()).isTrue();
@@ -40,7 +54,7 @@ public class BookDAOImplTest {
     @Test
     @DisplayName("Тест получение книги по ID")
     public void getById() {
-        Optional<Book> currentBook = dao.getById(1);
+        Optional<Book> currentBook = dao.getById(2);
         assertThat(currentBook.isPresent()).isTrue();
     }
 
@@ -54,7 +68,9 @@ public class BookDAOImplTest {
     @Test
     @DisplayName("Тест удаления книги")
     public void delete() {
-        Book book = new Book(2L, "BOOK2", 1L, 1L);
+        Author author = new Author(1L, "Author1");
+        Genre genre = new Genre(1L, "Genre1");
+        Book book = new Book(2L, "BOOK2", author, genre);
         dao.save(book);
         dao.delete(2);
         Optional<Book> currentBook = dao.getById(2);

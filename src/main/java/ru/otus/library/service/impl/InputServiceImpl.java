@@ -29,8 +29,8 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void editBook(Book book) throws UserInputProcessException {
-        handleGenre(book.getGenreId(), "Введен не существующий жанр.");
-        handleAuthor(book.getAuthorId(), "Введен не существующий автор");
+        handleGenre(book.getGenre().getId(), "Введен не существующий жанр.");
+        handleAuthor(book.getAuthor().getId(), "Введен не существующий автор");
         bookDAO.save(book);
     }
 
@@ -51,8 +51,8 @@ public class InputServiceImpl implements InputService {
             throw new UserInputProcessException("Невозможно найти книгу по указанному идентификатору");
         }
         Book book = optionalBook.get();
-        Genre genre = handleGenre(book.getGenreId(), "Невозможно найти жанр по идентификатору " + book.getGenreId());
-        Author author = handleAuthor(book.getAuthorId(), "Невозможно найти автора по идентификатору " + book.getAuthorId());
+        Genre genre = handleGenre(book.getGenre().getId(), "Невозможно найти жанр по идентификатору " + book.getGenre().getId());
+        Author author = handleAuthor(book.getAuthor().getId(), "Невозможно найти автора по идентификатору " + book.getAuthor().getId());
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Книга: ")
                 .append(book.getName())
@@ -102,8 +102,8 @@ public class InputServiceImpl implements InputService {
         List<Book> allBooks = bookDAO.getAll();
         StringBuilder stringBuilder = new StringBuilder();
         for (Book book : allBooks) {
-            Optional<Genre> optionalGenre = genreDAO.getById(book.getGenreId());
-            Optional<Author> optionalAuthor = authorDAO.getById(book.getAuthorId());
+            Optional<Genre> optionalGenre = genreDAO.getById(book.getGenre().getId());
+            Optional<Author> optionalAuthor = authorDAO.getById(book.getAuthor().getId());
             stringBuilder.append("Книга: ")
                     .append(book.getName())
                     .append(NEW_ROW)

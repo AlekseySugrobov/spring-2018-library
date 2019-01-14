@@ -1,5 +1,6 @@
 package ru.otus.library.dao.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,12 @@ public class AuthorDAOImplTest {
     @Autowired
     private AuthorDAO dao;
 
+    @BeforeEach
+    public void setUp() {
+        Author author = new Author(2L, "AUTHOR2");
+        dao.save(author);
+    }
+
     @Test
     @DisplayName("Тест создания автора")
     public void edit() {
@@ -40,7 +47,7 @@ public class AuthorDAOImplTest {
     @Test
     @DisplayName("Тест получения автора по ID")
     public void getById() {
-        Optional<Author> currentAuthor = dao.getById(1);
+        Optional<Author> currentAuthor = dao.getById(2);
         assertThat(currentAuthor.isPresent()).isTrue();
     }
 

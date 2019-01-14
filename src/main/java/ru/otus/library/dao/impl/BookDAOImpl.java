@@ -1,63 +1,54 @@
 package ru.otus.library.dao.impl;
 
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.library.dao.BookDAO;
 import ru.otus.library.domain.Book;
-import ru.otus.library.mappers.BookMapper;
 
-import java.util.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class BookDAOImpl implements BookDAO {
 
-    private final NamedParameterJdbcOperations jdbc;
-    private final RowMapper<Book> rowMapper;
-
-    public BookDAOImpl(NamedParameterJdbcOperations jdbcOperations, RowMapper<Book> rowMapper) {
-        this.jdbc = jdbcOperations;
-        this.rowMapper = rowMapper;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
+    @Transactional
     public void save(Book entity) {
-        final Map<String, Object> params = new HashMap<>();
-        params.put("id", entity.getId());
-        params.put("name", entity.getName());
-        params.put("genreId", entity.getGenreId());
-        params.put("authorId", entity.getAuthorId());
-        if (!getById(entity.getId()).isPresent()) {
-            jdbc.update("insert into books(id, name, genre_id, author_id) values (:id, :name, :genreId, :authorId)", params);
+        if (Objects.isNull(entity.getId())) {
+            entityManager.persist(entity);
         } else {
-            jdbc.update("update books set name=:name, genre_id=:genreId, author_id=:authorId where id=:id", params);
+            entityManager.merge(entity);
         }
     }
 
     @Override
     public Optional<Book> getById(long id) {
-        final Map<String, Long> params = Collections.singletonMap("id", id);
-        try {
-            return Optional.ofNullable(jdbc.queryForObject("select id as id, name as name, genre_id as genreId, author_id as authorId from books where id=:id", params, rowMapper));
-        } catch (EmptyResultDataAccessException ex) {
+        Book book = entityManager.find(Book.class, id);
+        if (Objects.isNull(book)) {
             return Optional.empty();
         }
+        return Optional.of(book);
     }
 
     @Override
     public List<Book> getAll() {
-        try {
-            return jdbc.query("select id as id, name as name, genre_id as genreId, author_id as authorId from books", rowMapper);
-        } catch (EmptyResultDataAccessException ex) {
-            return new ArrayList<>();
-        }
+        TypedQuery<Book> query = entityManager.createQuery("SELECT b FROM Book b", Book.class);
+        return query.getResultList();
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
-        final Map<String, Long> params = Collections.singletonMap("id", id);
-        jdbc.update("delete from books where id=:id", params);
+        Query query = entityManager.createQuery("DELETE FROM Book b WHERE b.id=:id");
+        query.setParameter("id", id);
+        query.executeUpdate();
     }
 }

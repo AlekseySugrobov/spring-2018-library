@@ -64,12 +64,12 @@ public class Commands {
                          @ShellOption String name,
                          @ShellOption long genreId,
                          @ShellOption long authorId) {
-        Book book = new Book(id, name, genreId, authorId);
+        /*Book book = new Book(id, name, genreId, authorId);
         try {
             this.inputService.editBook(book);
         } catch (UserInputProcessException ex) {
             System.out.println(ex.getMessage());
-        }
+        }*/
     }
 
     @ShellMethod("Editing author")
