@@ -4,10 +4,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.library.dao.BookDAO;
 import ru.otus.library.domain.Book;
+import ru.otus.library.exception.LibraryDataException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Objects;
@@ -47,8 +47,11 @@ public class BookDAOImpl implements BookDAO {
     @Override
     @Transactional
     public void delete(long id) {
-        Query query = entityManager.createQuery("DELETE FROM Book b WHERE b.id=:id");
-        query.setParameter("id", id);
-        query.executeUpdate();
+        Optional<Book> book = getById(id);
+        if (book.isPresent()) {
+            entityManager.remove(book.get());
+        } else {
+            throw new LibraryDataException("Can't find book by id " + id);
+        }
     }
 }

@@ -2,8 +2,8 @@ package ru.otus.library.dao.impl;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.library.dao.GenreDAO;
-import ru.otus.library.domain.Genre;
+import ru.otus.library.dao.CommentDAO;
+import ru.otus.library.domain.Comment;
 import ru.otus.library.exception.LibraryDataException;
 
 import javax.persistence.EntityManager;
@@ -14,13 +14,14 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
-public class GenreDAOImpl implements GenreDAO {
+public class CommentDAOImpl implements CommentDAO {
+
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     @Transactional
-    public void save(Genre entity) {
+    public void save(Comment entity) {
         if (Objects.isNull(entity.getId())) {
             entityManager.persist(entity);
         } else {
@@ -29,28 +30,28 @@ public class GenreDAOImpl implements GenreDAO {
     }
 
     @Override
-    public Optional<Genre> getById(long id) {
-        Genre genre = entityManager.find(Genre.class, id);
-        if (Objects.isNull(genre)) {
+    public Optional<Comment> getById(long id) {
+        Comment comment = entityManager.find(Comment.class, id);
+        if (Objects.isNull(comment)) {
             return Optional.empty();
         }
-        return Optional.of(genre);
+        return Optional.of(comment);
     }
 
     @Override
-    public List<Genre> getAll() {
-        TypedQuery<Genre> query = entityManager.createQuery("SELECT g FROM Genre g", Genre.class);
+    public List<Comment> getAll() {
+        TypedQuery<Comment> query = entityManager.createQuery("SELECT c from Comment c", Comment.class);
         return query.getResultList();
     }
 
     @Override
     @Transactional
     public void delete(long id) {
-        Optional<Genre> genre = getById(id);
-        if (genre.isPresent()) {
-            entityManager.remove(genre.get());
+        Optional<Comment> comment = getById(id);
+        if (comment.isPresent()) {
+            entityManager.remove(comment.get());
         } else {
-            throw new LibraryDataException("Can't find genre by id" + id);
+            throw new LibraryDataException("Can't find comment by id" + id);
         }
     }
 }

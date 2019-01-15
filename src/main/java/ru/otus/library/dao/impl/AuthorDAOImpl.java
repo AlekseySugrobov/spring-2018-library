@@ -4,10 +4,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.library.dao.AuthorDAO;
 import ru.otus.library.domain.Author;
+import ru.otus.library.exception.LibraryDataException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import java.util.List;
 import java.util.Objects;
@@ -47,8 +47,11 @@ public class AuthorDAOImpl implements AuthorDAO {
     @Override
     @Transactional
     public void delete(long id) {
-        Query query = entityManager.createQuery("DELETE FROM Author a WHERE a.id=:id");
-        query.setParameter("id", id);
-        query.executeUpdate();
+        Optional<Author> author = getById(id);
+        if (author.isPresent()) {
+            entityManager.remove(author.get());
+        } else {
+            throw new LibraryDataException("Can't find author by id" + id);
+        }
     }
 }

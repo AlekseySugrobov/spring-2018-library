@@ -3,9 +3,11 @@ package ru.otus.library.service.impl;
 import org.springframework.stereotype.Service;
 import ru.otus.library.dao.AuthorDAO;
 import ru.otus.library.dao.BookDAO;
+import ru.otus.library.dao.CommentDAO;
 import ru.otus.library.dao.GenreDAO;
 import ru.otus.library.domain.Author;
 import ru.otus.library.domain.Book;
+import ru.otus.library.domain.Comment;
 import ru.otus.library.domain.Genre;
 import ru.otus.library.exception.UserInputProcessException;
 import ru.otus.library.service.InputService;
@@ -20,11 +22,13 @@ public class InputServiceImpl implements InputService {
     private final BookDAO bookDAO;
     private final GenreDAO genreDAO;
     private final AuthorDAO authorDAO;
+    private final CommentDAO commentDAO;
 
-    public InputServiceImpl(BookDAO bookDAO, GenreDAO genreDAO, AuthorDAO authorDAO) {
+    public InputServiceImpl(BookDAO bookDAO, GenreDAO genreDAO, AuthorDAO authorDAO, CommentDAO commentDAO) {
         this.bookDAO = bookDAO;
         this.genreDAO = genreDAO;
         this.authorDAO = authorDAO;
+        this.commentDAO = commentDAO;
     }
 
     @Override
@@ -140,6 +144,30 @@ public class InputServiceImpl implements InputService {
                     .append(author.getId())
                     .append("; Наменование: ")
                     .append(author.getName())
+                    .append(NEW_ROW);
+        }
+        System.out.println(stringBuilder.toString());
+    }
+
+    @Override
+    public void addComment(Long bookId, Comment comment) throws UserInputProcessException {
+        Optional<Book> optionalBook = bookDAO.getById(bookId);
+        if (!optionalBook.isPresent()) {
+            throw new UserInputProcessException("Невозможно найти книгу по указанному идентификатору");
+        }
+        comment.setBook(optionalBook.get());
+        commentDAO.save(comment);
+    }
+
+    @Override
+    public void getAllComments() {
+        List<Comment> allComments = commentDAO.getAll();
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Comment comment:allComments) {
+            stringBuilder.append("ID: ")
+                    .append(comment.getId())
+                    .append("; Текст: ")
+                    .append(comment.getText())
                     .append(NEW_ROW);
         }
         System.out.println(stringBuilder.toString());

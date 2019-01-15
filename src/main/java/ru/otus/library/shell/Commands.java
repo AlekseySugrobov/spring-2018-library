@@ -5,6 +5,7 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 import ru.otus.library.domain.Author;
 import ru.otus.library.domain.Book;
+import ru.otus.library.domain.Comment;
 import ru.otus.library.domain.Genre;
 import ru.otus.library.exception.UserInputProcessException;
 import ru.otus.library.service.InputService;
@@ -62,14 +63,14 @@ public class Commands {
     @ShellMethod("Editing book")
     public void editBook(@ShellOption long id,
                          @ShellOption String name,
-                         @ShellOption long genreId,
-                         @ShellOption long authorId) {
-        /*Book book = new Book(id, name, genreId, authorId);
+                         @ShellOption Genre genre,
+                         @ShellOption Author author) {
+        Book book = new Book(id, name, author, genre);
         try {
             this.inputService.editBook(book);
         } catch (UserInputProcessException ex) {
             System.out.println(ex.getMessage());
-        }*/
+        }
     }
 
     @ShellMethod("Editing author")
@@ -84,5 +85,22 @@ public class Commands {
                           @ShellOption String name) {
         Genre genre = new Genre(id, name);
         this.inputService.editGenre(genre);
+    }
+
+    @ShellMethod("Adding comment")
+    public void addComment(@ShellOption long bookId,
+                           @ShellOption long commentId,
+                           @ShellOption String text) {
+        Comment comment = new Comment(commentId, text);
+        try {
+            this.inputService.addComment(bookId, comment);
+        } catch (UserInputProcessException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
+    @ShellMethod("Getting all comments")
+    public void getAllComments() {
+        this.inputService.getAllComments();
     }
 }
