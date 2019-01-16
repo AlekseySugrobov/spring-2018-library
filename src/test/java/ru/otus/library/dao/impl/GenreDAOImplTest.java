@@ -1,13 +1,15 @@
 package ru.otus.library.dao.impl;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.library.dao.GenreDAO;
 import ru.otus.library.domain.Genre;
@@ -19,45 +21,53 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false"})
+@DataJpaTest
 @DisplayName("Тесты GenreDAO")
-@SqlGroup({
-        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = {"classpath:testschema.sql", "classpath:testdata.sql"})
-})
 public class GenreDAOImplTest {
 
+    @TestConfiguration
+    static class GenreDaoImplTestConfiguration {
+        @Bean
+        public GenreDAO genreDAO(){
+            return new GenreDAOImpl();
+        }
+    }
+
     @Autowired
-    private GenreDAO dao;
+    private GenreDAO genreDAO;
+    private Genre genre;
+
+    @BeforeEach
+    public void setUp() {
+        genre = new Genre("AUTHOR2");
+        genreDAO.save(genre);
+    }
 
     @Test
     @DisplayName("Тест создания жанра")
     public void edit() {
-        Genre genre = new Genre(2L, "GENRE2");
-        dao.save(genre);
-        Optional<Genre> currentGenre = dao.getById(2);
-        assertThat(currentGenre.isPresent()).isTrue();
+        assertThat(genre.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("Тест полчения жанра по ID")
     public void getById() {
-        Optional<Genre> currentGenre = dao.getById(1);
+        Optional<Genre> currentGenre = genreDAO.getById(genre.getId());
         assertThat(currentGenre.isPresent()).isTrue();
     }
 
     @Test
     @DisplayName("Тест получения всех жанров")
     public void getAll() {
-        List<Genre> allGenres = dao.getAll();
+        List<Genre> allGenres = genreDAO.getAll();
         assertThat(allGenres).hasSize(1);
     }
 
     @Test
     @DisplayName("Тест удаления жанра")
     public void delete() {
-        Genre genre = new Genre(2L, "GENRE2");
-        dao.save(genre);
-        dao.delete(2);
-        Optional<Genre> currentGenre = dao.getById(2);
+        genreDAO.delete(genre.getId());
+        Optional<Genre> currentGenre = genreDAO.getById(genre.getId());
         assertThat(currentGenre.isPresent()).isFalse();
     }
 }

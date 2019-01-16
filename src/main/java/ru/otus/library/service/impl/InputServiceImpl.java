@@ -1,11 +1,14 @@
 package ru.otus.library.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.library.dao.AuthorDAO;
 import ru.otus.library.dao.BookDAO;
+import ru.otus.library.dao.CommentDAO;
 import ru.otus.library.dao.GenreDAO;
 import ru.otus.library.domain.Author;
 import ru.otus.library.domain.Book;
+import ru.otus.library.domain.Comment;
 import ru.otus.library.domain.Genre;
 import ru.otus.library.exception.UserInputProcessException;
 import ru.otus.library.service.InputService;
@@ -20,23 +23,26 @@ public class InputServiceImpl implements InputService {
     private final BookDAO bookDAO;
     private final GenreDAO genreDAO;
     private final AuthorDAO authorDAO;
+    private final CommentDAO commentDAO;
 
-    public InputServiceImpl(BookDAO bookDAO, GenreDAO genreDAO, AuthorDAO authorDAO) {
+    public InputServiceImpl(BookDAO bookDAO, GenreDAO genreDAO, AuthorDAO authorDAO, CommentDAO commentDAO) {
         this.bookDAO = bookDAO;
         this.genreDAO = genreDAO;
         this.authorDAO = authorDAO;
+        this.commentDAO = commentDAO;
     }
 
     @Override
     public void editBook(Book book) throws UserInputProcessException {
-        handleGenre(book.getGenreId(), "Введен не существующий жанр.");
-        handleAuthor(book.getAuthorId(), "Введен не существующий автор");
+        handleGenre(book.getGenre().getId(), "Введен не существующий жанр.");
+        handleAuthor(book.getAuthor().getId(), "Введен не существующий автор");
         bookDAO.save(book);
     }
 
     @Override
     public void editAuthor(Author author) {
         authorDAO.save(author);
+        System.out.println("author = [" + author + "]");
     }
 
     @Override
@@ -51,8 +57,8 @@ public class InputServiceImpl implements InputService {
             throw new UserInputProcessException("Невозможно найти книгу по указанному идентификатору");
         }
         Book book = optionalBook.get();
-        Genre genre = handleGenre(book.getGenreId(), "Невозможно найти жанр по идентификатору " + book.getGenreId());
-        Author author = handleAuthor(book.getAuthorId(), "Невозможно найти автора по идентификатору " + book.getAuthorId());
+        Genre genre = handleGenre(book.getGenre().getId(), "Невозможно найти жанр по идентификатору " + book.getGenre().getId());
+        Author author = handleAuthor(book.getAuthor().getId(), "Невозможно найти автора по идентификатору " + book.getAuthor().getId());
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Книга: ")
                 .append(book.getName())
@@ -102,8 +108,8 @@ public class InputServiceImpl implements InputService {
         List<Book> allBooks = bookDAO.getAll();
         StringBuilder stringBuilder = new StringBuilder();
         for (Book book : allBooks) {
-            Optional<Genre> optionalGenre = genreDAO.getById(book.getGenreId());
-            Optional<Author> optionalAuthor = authorDAO.getById(book.getAuthorId());
+            Optional<Genre> optionalGenre = genreDAO.getById(book.getGenre().getId());
+            Optional<Author> optionalAuthor = authorDAO.getById(book.getAuthor().getId());
             stringBuilder.append("Книга: ")
                     .append(book.getName())
                     .append(NEW_ROW)
@@ -140,6 +146,45 @@ public class InputServiceImpl implements InputService {
                     .append(author.getId())
                     .append("; Наменование: ")
                     .append(author.getName())
+                    .append(NEW_ROW);
+        }
+        System.out.println(stringBuilder.toString());
+    }
+
+    @Override
+    @Transactional
+    public void addComment(Long bookId, Comment comment) throws UserInputProcessException {
+        Optional<Book> optionalBook = bookDAO.getById(bookId);
+        if (!optionalBook.isPresent()) {
+            throw new UserInputProcessException("Невозможно найти книгу по указанному идентификатору");
+        }
+        comment.setBook(optionalBook.get());
+        commentDAO.save(comment);
+    }
+
+    @Override
+    public void getAllComments() {
+        List<Comment> allComments = commentDAO.getAll();
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Comment comment:allComments) {
+            stringBuilder.append("ID: ")
+                    .append(comment.getId())
+                    .append("; Текст: ")
+                    .append(comment.getText())
+                    .append(NEW_ROW);
+        }
+        System.out.println(stringBuilder.toString());
+    }
+
+    @Override
+    public void getCommentsByBookId(long bookId) {
+        List<Comment> comments = commentDAO.getCommentsByBookId(bookId);
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Comment comment:comments) {
+            stringBuilder.append("ID: ")
+                    .append(comment.getId())
+                    .append("; Текст: ")
+                    .append(comment.getText())
                     .append(NEW_ROW);
         }
         System.out.println(stringBuilder.toString());

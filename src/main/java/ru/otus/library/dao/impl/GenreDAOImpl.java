@@ -1,60 +1,56 @@
 package ru.otus.library.dao.impl;
 
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.library.dao.GenreDAO;
 import ru.otus.library.domain.Genre;
-import ru.otus.library.mappers.GenreMapper;
+import ru.otus.library.exception.LibraryDataException;
 
-import java.util.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Repository
 public class GenreDAOImpl implements GenreDAO {
-
-    private final NamedParameterJdbcOperations jdbc;
-    private final RowMapper<Genre> rowMapper;
-
-    public GenreDAOImpl(NamedParameterJdbcOperations jdbcOperations, RowMapper<Genre> rowMapper) {
-        this.jdbc = jdbcOperations;
-        this.rowMapper = rowMapper;
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
+    @Transactional
     public void save(Genre entity) {
-        final Map<String, Object> params = new HashMap<>(2);
-        params.put("id", entity.getId());
-        params.put("name", entity.getName());
-        if (!getById(entity.getId()).isPresent()) {
-            jdbc.update("insert into GENRES(id, name) values (:id, :name)", params);
+        if (Objects.isNull(entity.getId())) {
+            entityManager.persist(entity);
         } else {
-            jdbc.update("update genres set name=:name where id=:id", params);
+            entityManager.merge(entity);
         }
     }
 
     @Override
     public Optional<Genre> getById(long id) {
-        final Map<String, Long> params = Collections.singletonMap("id", id);
-        try {
-            return Optional.ofNullable(jdbc.queryForObject("select * from genres where id=:id", params, rowMapper));
-        } catch (EmptyResultDataAccessException ex) {
+        Genre genre = entityManager.find(Genre.class, id);
+        if (Objects.isNull(genre)) {
             return Optional.empty();
         }
+        return Optional.of(genre);
     }
 
     @Override
     public List<Genre> getAll() {
-        try {
-            return jdbc.query("select * from genres", rowMapper);
-        } catch (EmptyResultDataAccessException ex) {
-            return new ArrayList<>();
-        }
+        TypedQuery<Genre> query = entityManager.createQuery("SELECT g FROM Genre g", Genre.class);
+        return query.getResultList();
     }
 
     @Override
+    @Transactional
     public void delete(long id) {
-        final Map<String, Long> params = Collections.singletonMap("id", id);
-        jdbc.update("delete from genres where id=:id", params);
+        Optional<Genre> genre = getById(id);
+        if (genre.isPresent()) {
+            entityManager.remove(genre.get());
+        } else {
+            throw new LibraryDataException("Can't find genre by id" + id);
+        }
     }
 }

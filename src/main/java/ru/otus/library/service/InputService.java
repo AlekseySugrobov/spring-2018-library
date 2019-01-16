@@ -2,6 +2,7 @@ package ru.otus.library.service;
 
 import ru.otus.library.domain.Author;
 import ru.otus.library.domain.Book;
+import ru.otus.library.domain.Comment;
 import ru.otus.library.domain.Genre;
 import ru.otus.library.exception.UserInputProcessException;
 
@@ -15,4 +16,7 @@ public interface InputService {
     void getAllBooks();
     void getAllGenres();
     void getAllAuthors();
+    void addComment(Long bookId, Comment comment) throws UserInputProcessException;
+    void getAllComments();
+    void getCommentsByBookId(long bookId);
 }
