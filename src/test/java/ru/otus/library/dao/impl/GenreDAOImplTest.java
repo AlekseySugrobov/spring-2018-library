@@ -35,26 +35,24 @@ public class GenreDAOImplTest {
 
     @Autowired
     private GenreDAO genreDAO;
+    private Genre genre;
 
     @BeforeEach
     public void setUp() {
-        Genre genre = new Genre(2L, "AUTHOR2");
+        genre = new Genre("AUTHOR2");
         genreDAO.save(genre);
     }
 
     @Test
     @DisplayName("Тест создания жанра")
     public void edit() {
-        Genre genre = new Genre(2L, "GENRE2");
-        genreDAO.save(genre);
-        Optional<Genre> currentGenre = genreDAO.getById(2);
-        assertThat(currentGenre.isPresent()).isTrue();
+        assertThat(genre.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("Тест полчения жанра по ID")
     public void getById() {
-        Optional<Genre> currentGenre = genreDAO.getById(2);
+        Optional<Genre> currentGenre = genreDAO.getById(genre.getId());
         assertThat(currentGenre.isPresent()).isTrue();
     }
 
@@ -68,8 +66,8 @@ public class GenreDAOImplTest {
     @Test
     @DisplayName("Тест удаления жанра")
     public void delete() {
-        genreDAO.delete(2);
-        Optional<Genre> currentGenre = genreDAO.getById(2);
+        genreDAO.delete(genre.getId());
+        Optional<Genre> currentGenre = genreDAO.getById(genre.getId());
         assertThat(currentGenre.isPresent()).isFalse();
     }
 }

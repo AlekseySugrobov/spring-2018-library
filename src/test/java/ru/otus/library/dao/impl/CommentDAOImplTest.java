@@ -35,31 +35,28 @@ public class CommentDAOImplTest {
     @Autowired
     private CommentDAO commentDAO;
 
+    private Comment comment;
+    private Book book;
+
     @BeforeEach
     public void setUp() {
-        Author author = new Author(1L, "Author1");
-        Genre genre = new Genre(1L, "Genre1");
-        Book book = new Book(2L, "BOOK2", author, genre);
-        Comment comment = new Comment(1L, "Comment1", book);
+        Author author = new Author("Author1");
+        Genre genre = new Genre("Genre1");
+        book = new Book("BOOK2", genre, author);
+        comment = new Comment("Comment1", book);
         commentDAO.save(comment);
     }
 
     @Test
     @DisplayName("Сохранение комментария")
     public void edit() {
-        Author author = new Author(1L, "Author1");
-        Genre genre = new Genre(1L, "Genre1");
-        Book book = new Book(2L, "BOOK2", author, genre);
-        Comment comment = new Comment(1L, "Comment1", book);
-        commentDAO.save(comment);
-        Optional<Comment> currentComment = commentDAO.getById(1L);
-        assertThat(currentComment).isPresent();
+        assertThat(comment.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("Тест получения комментария по ID")
     public void getById() {
-        Optional<Comment> currentComment = commentDAO.getById(1L);
+        Optional<Comment> currentComment = commentDAO.getById(comment.getId());
         assertThat(currentComment).isPresent();
     }
 
@@ -73,15 +70,15 @@ public class CommentDAOImplTest {
     @Test
     @DisplayName("Тест получения комментариев по ID книги")
     public void getCommentsByBookId() {
-        List<Comment> comments = commentDAO.getCommentsByBookId(2);
+        List<Comment> comments = commentDAO.getCommentsByBookId(book.getId());
         assertThat(comments).hasSize(1);
     }
 
     @Test
     @DisplayName("Тест удаления комментария")
     public void delete() {
-        commentDAO.delete(1L);
-        Optional<Comment> currentComment = commentDAO.getById(1L);
+        commentDAO.delete(comment.getId());
+        Optional<Comment> currentComment = commentDAO.getById(comment.getId());
         assertThat(currentComment.isPresent()).isFalse();
     }
 }

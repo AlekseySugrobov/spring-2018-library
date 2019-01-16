@@ -37,30 +37,26 @@ public class BookDAOImplTest {
 
     @Autowired
     private BookDAO bookDAO;
+    private Book book;
 
     @BeforeEach
     public void setUp() {
-        Author author = new Author(1L, "Author1");
-        Genre genre = new Genre(1L, "Genre1");
-        Book book = new Book(2L, "BOOK2", author, genre);
+        Author author = new Author("Author1");
+        Genre genre = new Genre("Genre1");
+        book = new Book("BOOK2", genre, author);
         bookDAO.save(book);
     }
 
     @Test
     @DisplayName("Тест создания книги")
     public void edit() {
-        Author author = new Author(1L, "Author1");
-        Genre genre = new Genre(1L, "Genre1");
-        Book book = new Book(2L, "BOOK2", author, genre);
-        bookDAO.save(book);
-        Optional<Book> currentBook = bookDAO.getById(2);
-        assertThat(currentBook.isPresent()).isTrue();
+        assertThat(book.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("Тест получение книги по ID")
     public void getById() {
-        Optional<Book> currentBook = bookDAO.getById(2);
+        Optional<Book> currentBook = bookDAO.getById(book.getId());
         assertThat(currentBook.isPresent()).isTrue();
     }
 
@@ -74,8 +70,8 @@ public class BookDAOImplTest {
     @Test
     @DisplayName("Тест удаления книги")
     public void delete() {
-        bookDAO.delete(2);
-        Optional<Book> currentBook = bookDAO.getById(2);
+        bookDAO.delete(book.getId());
+        Optional<Book> currentBook = bookDAO.getById(book.getId());
         assertThat(currentBook.isPresent()).isFalse();
     }
 }

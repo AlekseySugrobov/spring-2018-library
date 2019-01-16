@@ -33,25 +33,24 @@ public class AuthorDAOImplTest {
     @Autowired
     private AuthorDAO authorDAO;
 
+    private Author author;
+
     @BeforeEach
     public void setUp() {
-        Author author = new Author(2L, "AUTHOR2");
+        author = new Author("AUTHOR2");
         authorDAO.save(author);
     }
 
     @Test
     @DisplayName("Тест создания автора")
     public void edit() {
-        Author author = new Author(2L, "AUTHOR2");
-        authorDAO.save(author);
-        Optional<Author> currentAuthor = authorDAO.getById(2);
-        assertThat(currentAuthor.isPresent()).isTrue();
+        assertThat(author.getId()).isNotNull();
     }
 
     @Test
     @DisplayName("Тест получения автора по ID")
     public void getById() {
-        Optional<Author> currentAuthor = authorDAO.getById(2);
+        Optional<Author> currentAuthor = authorDAO.getById(author.getId());
         assertThat(currentAuthor.isPresent()).isTrue();
     }
 
@@ -65,8 +64,8 @@ public class AuthorDAOImplTest {
     @Test
     @DisplayName("Тест удаления автора")
     public void delete() {
-        authorDAO.delete(2L);
-        Optional<Author> currentAuthor = authorDAO.getById(2L);
+        authorDAO.delete(author.getId());
+        Optional<Author> currentAuthor = authorDAO.getById(author.getId());
         assertThat(currentAuthor.isPresent()).isFalse();
     }
 }
