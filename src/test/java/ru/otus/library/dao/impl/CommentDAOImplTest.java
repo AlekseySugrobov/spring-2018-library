@@ -71,6 +71,13 @@ public class CommentDAOImplTest {
     }
 
     @Test
+    @DisplayName("Тест получения комментариев по ID книги")
+    public void getCommentsByBookId() {
+        List<Comment> comments = commentDAO.getCommentsByBookId(2);
+        assertThat(comments).hasSize(1);
+    }
+
+    @Test
     @DisplayName("Тест удаления комментария")
     public void delete() {
         commentDAO.delete(1L);

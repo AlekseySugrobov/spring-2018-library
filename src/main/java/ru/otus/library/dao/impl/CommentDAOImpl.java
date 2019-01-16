@@ -45,6 +45,13 @@ public class CommentDAOImpl implements CommentDAO {
     }
 
     @Override
+    public List<Comment> getCommentsByBookId(long bookId) {
+        TypedQuery<Comment> query = entityManager.createQuery("SELECT c FROM Comment c JOIN c.book b WHERE b.id=:id", Comment.class);
+        query.setParameter("id", bookId);
+        return query.getResultList();
+    }
+
+    @Override
     @Transactional
     public void delete(long id) {
         Optional<Comment> comment = getById(id);

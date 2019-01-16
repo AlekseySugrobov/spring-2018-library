@@ -15,14 +15,15 @@ import javax.persistence.*;
 @Table(name = "comments")
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment-generator")
+    @SequenceGenerator(name = "comment-generator", sequenceName = "comment_seq", allocationSize = 1)
     private Long id;
     private String text;
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "book_id")
     private Book book;
 
-    public Comment(Long id, String text) {
-        this.id = id;
+    public Comment(String text) {
         this.text = text;
     }
 }

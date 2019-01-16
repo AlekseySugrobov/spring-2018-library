@@ -1,6 +1,7 @@
 package ru.otus.library.service.impl;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.library.dao.AuthorDAO;
 import ru.otus.library.dao.BookDAO;
 import ru.otus.library.dao.CommentDAO;
@@ -41,6 +42,7 @@ public class InputServiceImpl implements InputService {
     @Override
     public void editAuthor(Author author) {
         authorDAO.save(author);
+        System.out.println("author = [" + author + "]");
     }
 
     @Override
@@ -150,6 +152,7 @@ public class InputServiceImpl implements InputService {
     }
 
     @Override
+    @Transactional
     public void addComment(Long bookId, Comment comment) throws UserInputProcessException {
         Optional<Book> optionalBook = bookDAO.getById(bookId);
         if (!optionalBook.isPresent()) {
@@ -164,6 +167,20 @@ public class InputServiceImpl implements InputService {
         List<Comment> allComments = commentDAO.getAll();
         StringBuilder stringBuilder = new StringBuilder();
         for(Comment comment:allComments) {
+            stringBuilder.append("ID: ")
+                    .append(comment.getId())
+                    .append("; Текст: ")
+                    .append(comment.getText())
+                    .append(NEW_ROW);
+        }
+        System.out.println(stringBuilder.toString());
+    }
+
+    @Override
+    public void getCommentsByBookId(long bookId) {
+        List<Comment> comments = commentDAO.getCommentsByBookId(bookId);
+        StringBuilder stringBuilder = new StringBuilder();
+        for(Comment comment:comments) {
             stringBuilder.append("ID: ")
                     .append(comment.getId())
                     .append("; Текст: ")

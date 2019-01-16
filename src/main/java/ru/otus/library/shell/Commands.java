@@ -60,6 +60,18 @@ public class Commands {
         this.inputService.getAllGenres();
     }
 
+    @ShellMethod("Creating book")
+    public void createBook(@ShellOption String name,
+                           @ShellOption Genre genre,
+                           @ShellOption Author author){
+        Book book = new Book(name, genre, author);
+        try {
+            this.inputService.editBook(book);
+        } catch (UserInputProcessException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
     @ShellMethod("Editing book")
     public void editBook(@ShellOption long id,
                          @ShellOption String name,
@@ -71,6 +83,12 @@ public class Commands {
         } catch (UserInputProcessException ex) {
             System.out.println(ex.getMessage());
         }
+    }
+
+    @ShellMethod("Create author")
+    public void createAuthor(@ShellOption String name) {
+        Author author = new Author(name);
+        this.inputService.editAuthor(author);
     }
 
     @ShellMethod("Editing author")
@@ -87,11 +105,16 @@ public class Commands {
         this.inputService.editGenre(genre);
     }
 
+    @ShellMethod("Create genre")
+    public void createGenre(@ShellOption String name) {
+        Genre genre = new Genre(name);
+        this.inputService.editGenre(genre);
+    }
+
     @ShellMethod("Adding comment")
     public void addComment(@ShellOption long bookId,
-                           @ShellOption long commentId,
                            @ShellOption String text) {
-        Comment comment = new Comment(commentId, text);
+        Comment comment = new Comment(text);
         try {
             this.inputService.addComment(bookId, comment);
         } catch (UserInputProcessException ex) {
@@ -102,5 +125,10 @@ public class Commands {
     @ShellMethod("Getting all comments")
     public void getAllComments() {
         this.inputService.getAllComments();
+    }
+
+    @ShellMethod("Getting comments by book id")
+    public void getComments(@ShellOption long bookId) {
+        this.inputService.getCommentsByBookId(bookId);
     }
 }

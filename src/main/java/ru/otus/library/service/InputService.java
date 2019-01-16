@@ -18,4 +18,5 @@ public interface InputService {
     void getAllAuthors();
     void addComment(Long bookId, Comment comment) throws UserInputProcessException;
     void getAllComments();
+    void getCommentsByBookId(long bookId);
 }
