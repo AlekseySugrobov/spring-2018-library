@@ -25,14 +25,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Тесты GenreDAO")
 public class GenreDAOImplTest {
 
-    @TestConfiguration
-    static class GenreDaoImplTestConfiguration {
-        @Bean
-        public GenreDAO genreDAO(){
-            return new GenreDAOImpl();
-        }
-    }
-
     @Autowired
     private GenreDAO genreDAO;
     private Genre genre;
@@ -52,22 +44,22 @@ public class GenreDAOImplTest {
     @Test
     @DisplayName("Тест полчения жанра по ID")
     public void getById() {
-        Optional<Genre> currentGenre = genreDAO.getById(genre.getId());
+        Optional<Genre> currentGenre = genreDAO.findById(genre.getId());
         assertThat(currentGenre.isPresent()).isTrue();
     }
 
     @Test
     @DisplayName("Тест получения всех жанров")
     public void getAll() {
-        List<Genre> allGenres = genreDAO.getAll();
+        Iterable<Genre> allGenres = genreDAO.findAll();
         assertThat(allGenres).hasSize(1);
     }
 
     @Test
     @DisplayName("Тест удаления жанра")
     public void delete() {
-        genreDAO.delete(genre.getId());
-        Optional<Genre> currentGenre = genreDAO.getById(genre.getId());
+        genreDAO.deleteById(genre.getId());
+        Optional<Genre> currentGenre = genreDAO.findById(genre.getId());
         assertThat(currentGenre.isPresent()).isFalse();
     }
 }
