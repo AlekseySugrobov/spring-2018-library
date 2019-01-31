@@ -94,5 +94,6 @@ public class BookDAOTest {
         commentDAO.save(comment);
         bookDAO.fullDelete(book);
         assertThat(commentDAO.findByBookId(book.getId())).isEmpty();
+        assertThat(bookDAO.findById(book.getId()).isPresent()).isFalse();
     }
 }
