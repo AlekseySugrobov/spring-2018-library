@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -21,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false"})
-@DataJpaTest
 @DisplayName("Тесты GenreDAO")
+@DataMongoTest
 public class GenreDAOImplTest {
 
     @Autowired
@@ -31,6 +32,7 @@ public class GenreDAOImplTest {
 
     @BeforeEach
     public void setUp() {
+        genreDAO.deleteAll();
         genre = new Genre("AUTHOR2");
         genreDAO.save(genre);
     }

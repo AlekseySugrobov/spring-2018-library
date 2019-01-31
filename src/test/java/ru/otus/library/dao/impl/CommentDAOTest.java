@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.library.dao.CommentDAO;
@@ -19,8 +20,8 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@DataJpaTest
 @DisplayName("Тесты CommentDAO")
+@DataMongoTest
 public class CommentDAOTest {
 
     @Autowired
@@ -31,6 +32,7 @@ public class CommentDAOTest {
 
     @BeforeEach
     public void setUp() {
+        commentDAO.deleteAll();
         Author author = new Author("Author1");
         Genre genre = new Genre("Genre1");
         book = new Book("BOOK2", genre, author);

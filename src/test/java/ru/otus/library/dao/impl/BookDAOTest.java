@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
@@ -20,8 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(properties = {InteractiveShellApplicationRunner.SPRING_SHELL_INTERACTIVE_ENABLED + "=false"})
-@DataJpaTest
 @DisplayName("Тесты BookDAO")
+@DataMongoTest
 public class BookDAOTest {
 
     @Autowired
@@ -30,6 +31,7 @@ public class BookDAOTest {
 
     @BeforeEach
     public void setUp() {
+        bookDAO.deleteAll();
         Author author = new Author("Author1");
         Genre genre = new Genre("Genre1");
         book = new Book("BOOK2", genre, author);
