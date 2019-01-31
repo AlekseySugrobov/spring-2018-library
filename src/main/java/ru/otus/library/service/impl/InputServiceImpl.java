@@ -1,5 +1,6 @@
 package ru.otus.library.service.impl;
 
+import javafx.scene.input.GestureEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.library.dao.AuthorDAO;
@@ -34,8 +35,10 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void editBook(Book book) throws UserInputProcessException {
-        handleGenre(book.getGenre().getId(), "Введен не существующий жанр.");
-        handleAuthor(book.getAuthor().getId(), "Введен не существующий автор");
+        Genre genre = handleGenre(book.getGenre().getId(), "Введен не существующий жанр.");
+        Author author = handleAuthor(book.getAuthor().getId(), "Введен не существующий автор");
+        book.setGenre(genre);
+        book.setAuthor(author);
         bookDAO.save(book);
     }
 
@@ -73,27 +76,18 @@ public class InputServiceImpl implements InputService {
 
     private Author handleAuthor(String authorId, String s) throws UserInputProcessException {
         Optional<Author> optionalAuthor = authorDAO.findById(authorId);
-        if (!optionalAuthor.isPresent()) {
-            throw new UserInputProcessException(s);
-        }
-        return optionalAuthor.get();
+        return optionalAuthor.orElseThrow(() -> new UserInputProcessException(s));
     }
 
     private Genre handleGenre(String genreId, String s) throws UserInputProcessException {
         Optional<Genre> optionalGenre = genreDAO.findById(genreId);
-        if (!optionalGenre.isPresent()) {
-            throw new UserInputProcessException(s);
-        }
-        return optionalGenre.get();
+        return optionalGenre.orElseThrow(() -> new UserInputProcessException(s));
     }
 
     @Override
     public void getAuthor(String id) throws UserInputProcessException {
         Optional<Author> optionalAuthor = authorDAO.findById(id);
-        if (!optionalAuthor.isPresent()) {
-            throw new UserInputProcessException("Невозможно найти автора по указанному идентификатору");
-        }
-        Author author = optionalAuthor.get();
+        Author author = optionalAuthor.orElseThrow(() -> new UserInputProcessException("Невозможно найти автора по указанному идентификатору"));
         System.out.println("Автор: " + author.getName());
     }
 
@@ -155,10 +149,7 @@ public class InputServiceImpl implements InputService {
     @Transactional
     public void addComment(String bookId, Comment comment) throws UserInputProcessException {
         Optional<Book> optionalBook = bookDAO.findById(bookId);
-        if (!optionalBook.isPresent()) {
-            throw new UserInputProcessException("Невозможно найти книгу по указанному идентификатору");
-        }
-        comment.setBook(optionalBook.get());
+        comment.setBook(optionalBook.orElseThrow(() -> new UserInputProcessException("Невозможно найти книгу по указанному идентификатору")));
         commentDAO.save(comment);
     }
 

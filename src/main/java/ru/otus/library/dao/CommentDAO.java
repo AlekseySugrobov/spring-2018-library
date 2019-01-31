@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CommentDAO extends MongoRepository<Comment, String> {
     List<Comment> findByBookId(String bookId);
+    void deleteAllByBookId(String bookId);
 }

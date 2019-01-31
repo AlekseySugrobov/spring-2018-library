@@ -6,15 +6,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.shell.jline.InteractiveShellApplicationRunner;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.otus.library.dao.AuthorDAO;
 import ru.otus.library.dao.BookDAO;
+import ru.otus.library.dao.CommentDAO;
 import ru.otus.library.domain.Author;
 import ru.otus.library.domain.Book;
+import ru.otus.library.domain.Comment;
 import ru.otus.library.domain.Genre;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,12 +30,17 @@ public class BookDAOTest {
 
     @Autowired
     private BookDAO bookDAO;
+    @Autowired
+    private AuthorDAO authorDAO;
+    @Autowired
+    private CommentDAO commentDAO;
     private Book book;
+    private Author author;
 
     @BeforeEach
     public void setUp() {
         bookDAO.deleteAll();
-        Author author = new Author("Author1");
+        author = new Author("Author1");
         Genre genre = new Genre("Genre1");
         book = new Book("BOOK2", genre, author);
         bookDAO.save(book);
@@ -64,5 +72,27 @@ public class BookDAOTest {
         bookDAO.deleteById(book.getId());
         Optional<Book> currentBook = bookDAO.findById(book.getId());
         assertThat(currentBook.isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Тест изменения имени автора книги")
+    public void editAuthor() {
+        String newAuthorName = "NewAuthorName";
+        author.setName(newAuthorName);
+        authorDAO.save(author);
+        assertThat(authorDAO.findById(author.getId()).get().getName()).isEqualTo(newAuthorName);
+        Book book2 = bookDAO.findById(book.getId()).get();
+        assertThat(book2.getAuthor().getName()).isEqualTo(newAuthorName);
+        bookDAO.delete(book2);
+        assertThat(bookDAO.findById(book2.getId()).isPresent()).isFalse();
+    }
+
+    @Test
+    @DisplayName("Тест добавления и удаления комментария")
+    public void addAndDeleteComment() {
+        Comment comment = new Comment("Comment1", book);
+        commentDAO.save(comment);
+        bookDAO.fullDelete(book);
+        assertThat(commentDAO.findByBookId(book.getId())).isEmpty();
     }
 }
