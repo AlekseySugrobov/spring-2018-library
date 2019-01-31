@@ -52,7 +52,7 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void getBook(long id) throws UserInputProcessException {
-        Optional<Book> optionalBook = bookDAO.getById(id);
+        Optional<Book> optionalBook = bookDAO.findById(id);
         if (!optionalBook.isPresent()) {
             throw new UserInputProcessException("Невозможно найти книгу по указанному идентификатору");
         }
@@ -72,7 +72,7 @@ public class InputServiceImpl implements InputService {
     }
 
     private Author handleAuthor(Long authorId, String s) throws UserInputProcessException {
-        Optional<Author> optionalAuthor = authorDAO.getById(authorId);
+        Optional<Author> optionalAuthor = authorDAO.findById(authorId);
         if (!optionalAuthor.isPresent()) {
             throw new UserInputProcessException(s);
         }
@@ -80,7 +80,7 @@ public class InputServiceImpl implements InputService {
     }
 
     private Genre handleGenre(Long genreId, String s) throws UserInputProcessException {
-        Optional<Genre> optionalGenre = genreDAO.getById(genreId);
+        Optional<Genre> optionalGenre = genreDAO.findById(genreId);
         if (!optionalGenre.isPresent()) {
             throw new UserInputProcessException(s);
         }
@@ -89,7 +89,7 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void getAuthor(long id) throws UserInputProcessException {
-        Optional<Author> optionalAuthor = authorDAO.getById(id);
+        Optional<Author> optionalAuthor = authorDAO.findById(id);
         if (!optionalAuthor.isPresent()) {
             throw new UserInputProcessException("Невозможно найти автора по указанному идентификатору");
         }
@@ -105,11 +105,11 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void getAllBooks() {
-        List<Book> allBooks = bookDAO.getAll();
+        Iterable<Book> allBooks = bookDAO.findAll();
         StringBuilder stringBuilder = new StringBuilder();
         for (Book book : allBooks) {
-            Optional<Genre> optionalGenre = genreDAO.getById(book.getGenre().getId());
-            Optional<Author> optionalAuthor = authorDAO.getById(book.getAuthor().getId());
+            Optional<Genre> optionalGenre = genreDAO.findById(book.getGenre().getId());
+            Optional<Author> optionalAuthor = authorDAO.findById(book.getAuthor().getId());
             stringBuilder.append("Книга: ")
                     .append(book.getName())
                     .append(NEW_ROW)
@@ -125,7 +125,7 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void getAllGenres() {
-        List<Genre> allGenres = genreDAO.getAll();
+        Iterable<Genre> allGenres = genreDAO.findAll();
         StringBuilder stringBuilder = new StringBuilder();
         for (Genre genre : allGenres) {
             stringBuilder.append("ID: ")
@@ -139,7 +139,7 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void getAllAuthors() {
-        List<Author> allAuthors = authorDAO.getAll();
+        Iterable<Author> allAuthors = authorDAO.findAll();
         StringBuilder stringBuilder = new StringBuilder();
         for (Author author : allAuthors) {
             stringBuilder.append("ID: ")
@@ -154,7 +154,7 @@ public class InputServiceImpl implements InputService {
     @Override
     @Transactional
     public void addComment(Long bookId, Comment comment) throws UserInputProcessException {
-        Optional<Book> optionalBook = bookDAO.getById(bookId);
+        Optional<Book> optionalBook = bookDAO.findById(bookId);
         if (!optionalBook.isPresent()) {
             throw new UserInputProcessException("Невозможно найти книгу по указанному идентификатору");
         }
@@ -164,9 +164,9 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void getAllComments() {
-        List<Comment> allComments = commentDAO.getAll();
+        Iterable<Comment> allComments = commentDAO.findAll();
         StringBuilder stringBuilder = new StringBuilder();
-        for(Comment comment:allComments) {
+        for (Comment comment : allComments) {
             stringBuilder.append("ID: ")
                     .append(comment.getId())
                     .append("; Текст: ")
@@ -178,9 +178,9 @@ public class InputServiceImpl implements InputService {
 
     @Override
     public void getCommentsByBookId(long bookId) {
-        List<Comment> comments = commentDAO.getCommentsByBookId(bookId);
+        List<Comment> comments = commentDAO.findByBookId(bookId);
         StringBuilder stringBuilder = new StringBuilder();
-        for(Comment comment:comments) {
+        for (Comment comment : comments) {
             stringBuilder.append("ID: ")
                     .append(comment.getId())
                     .append("; Текст: ")

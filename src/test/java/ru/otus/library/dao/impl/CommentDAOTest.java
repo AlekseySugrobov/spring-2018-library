@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.library.dao.CommentDAO;
 import ru.otus.library.domain.Author;
@@ -23,14 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @DisplayName("Тесты CommentDAO")
-public class CommentDAOImplTest {
-    @TestConfiguration
-    static class CommentDAOImplTestConfiguration{
-        @Bean
-        public CommentDAO commentDAO(){
-            return new CommentDAOImpl();
-        }
-    }
+public class CommentDAOTest {
 
     @Autowired
     private CommentDAO commentDAO;
@@ -56,29 +47,29 @@ public class CommentDAOImplTest {
     @Test
     @DisplayName("Тест получения комментария по ID")
     public void getById() {
-        Optional<Comment> currentComment = commentDAO.getById(comment.getId());
+        Optional<Comment> currentComment = commentDAO.findById(comment.getId());
         assertThat(currentComment).isPresent();
     }
 
     @Test
     @DisplayName("Тест получения всех комментариев")
     public void getAll() {
-        List<Comment> allComments = commentDAO.getAll();
+        Iterable<Comment> allComments = commentDAO.findAll();
         assertThat(allComments).hasSize(1);
     }
 
     @Test
     @DisplayName("Тест получения комментариев по ID книги")
     public void getCommentsByBookId() {
-        List<Comment> comments = commentDAO.getCommentsByBookId(book.getId());
+        List<Comment> comments = commentDAO.findByBookId(book.getId());
         assertThat(comments).hasSize(1);
     }
 
     @Test
     @DisplayName("Тест удаления комментария")
     public void delete() {
-        commentDAO.delete(comment.getId());
-        Optional<Comment> currentComment = commentDAO.getById(comment.getId());
+        commentDAO.deleteById(comment.getId());
+        Optional<Comment> currentComment = commentDAO.findById(comment.getId());
         assertThat(currentComment.isPresent()).isFalse();
     }
 }
