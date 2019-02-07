@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8"/>
+  <title>List of all persons</title>
+  <style type="text/css">
+    body {
+      padding: 50px;
+    }
+
+    .genres {
+      width: 100%
+    }
+
+    .genres, .genres td {
+      border: 1px solid lightgray;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+<h1>Genres:</h1>
+<a th:href="@{/genres/create}">Add genre</a>
+<table class="genres">
+  <thead>
+  <tr>
+    <th width="30%">ID</th>
+    <th width="60%">Name</th>
+    <th width="10%">Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="genre: ${genres}">
+    <td th:text="${genre.id}"></td>
+    <td th:text="${genre.name}"></td>
+    <td>
+      <a th:href="@{/genres/edit(id=${genre.id})}">Edit</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/}">To main page</a>
+</body>
+</html>

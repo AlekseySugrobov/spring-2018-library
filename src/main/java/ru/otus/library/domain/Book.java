@@ -12,7 +12,6 @@ import ru.otus.library.annotations.CascadeSave;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "books")
 public class Book {
     @Id
@@ -29,5 +28,10 @@ public class Book {
         this.name = name;
         this.genre = genre;
         this.author = author;
+    }
+
+    public Book() {
+        this.genre = new Genre();
+        this.author = new Author();
     }
 }
