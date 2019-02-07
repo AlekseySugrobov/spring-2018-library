@@ -41,9 +41,10 @@
   <div class="row">
     <label>Author:&nbsp;</label>
     <select class="form-control" name="author.id" >
+      <option th:if="${book.author.id == null}" selected>Выберите автора</option>
       <option th:each="author : ${authors}"
               th:value="${author.id}"
-              th:selected="${book.author.id.equals(author.id)}"
+              th:selected="${author.id.equals(book.author.id)}"
               th:text="${author.name}">
       </option>
     </select>
@@ -52,9 +53,10 @@
   <div class="row">
     <label>Genre:&nbsp;</label>
     <select class="form-control" name="genre.id">
+      <option th:if="${book.genre.id == null}" selected>Выберите жанр</option>
       <option th:each="genre : ${genres}"
               th:value="${genre.id}"
-              th:selected="${book.genre.id.equals(genre.id)}"
+              th:selected="${genre.id.equals(book.genre.id)}"
               th:text="${genre.name}">
       </option>
     </select>
