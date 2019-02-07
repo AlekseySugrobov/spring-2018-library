@@ -10,4 +10,6 @@ public interface AuthorService {
     Author findById(String id);
 
     void save(Author author);
+
+    void delete(String id);
 }

@@ -2,12 +2,14 @@ package ru.otus.library.rest;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.library.domain.Book;
 import ru.otus.library.service.AuthorService;
 import ru.otus.library.service.BookService;
 import ru.otus.library.service.GenreService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -49,7 +51,12 @@ public class BookController {
     }
 
     @PostMapping("/edit")
-    public String editBook(@ModelAttribute Book book) {
+    public String editBook(@Valid @ModelAttribute Book book, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("genres", genreService.findAll());
+            model.addAttribute("authors", authorService.findAll());
+            return "books/edit";
+        }
         bookService.save(book);
         return "redirect:/books/list";
     }

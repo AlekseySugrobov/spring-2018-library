@@ -35,6 +35,7 @@
     <td th:text="${author.name}"></td>
     <td>
       <a th:href="@{/authors/edit(id=${author.id})}">Edit</a>
+      <a th:href="@{/authors/delete(id=${author.id})}">Delete</a>
     </td>
   </tr>
   </tbody>

@@ -43,4 +43,10 @@ public class AuthorController {
         authorService.save(author);
         return "redirect:/authors/list";
     }
+
+    @GetMapping("/delete")
+    public String deleteAuthor(@RequestParam("id") String id) {
+        authorService.delete(id);
+        return "redirect:/authors/list";
+    }
 }

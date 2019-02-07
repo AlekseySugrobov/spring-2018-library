@@ -35,4 +35,12 @@ public class AuthorServiceImpl implements AuthorService {
         }
         authorDAO.save(author);
     }
+
+    @Override
+    public void delete(String id) {
+        if (StringUtils.isEmptyOrWhitespace(id)) {
+            throw new LibraryDataException("Empty id");
+        }
+        authorDAO.deleteById(id);
+    }
 }
