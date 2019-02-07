@@ -4,23 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "comments")
+@Document(collection="comments")
 public class Comment {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "comment-generator")
-    @SequenceGenerator(name = "comment-generator", sequenceName = "comment_seq", allocationSize = 1)
-    private Long id;
+    private String id;
     private String text;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "book_id")
     private Book book;
 
     public Comment(String text) {

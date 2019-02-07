@@ -1,9 +1,8 @@
 package ru.otus.library.dao;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import ru.otus.library.domain.Book;
 
-@Repository
-public interface BookDAO extends CrudRepository<Book, Long> {
+public interface BookDAO extends MongoRepository<Book, String>, BookDAOExtended{
+
 }

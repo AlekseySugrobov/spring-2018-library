@@ -10,13 +10,13 @@ public interface InputService {
     void editBook(Book book) throws UserInputProcessException;
     void editAuthor(Author author);
     void editGenre(Genre genre);
-    void getBook(long id) throws UserInputProcessException;
-    void getAuthor(long id) throws UserInputProcessException;
-    void getGenre(long id) throws UserInputProcessException;
+    void getBook(String id) throws UserInputProcessException;
+    void getAuthor(String id) throws UserInputProcessException;
+    void getGenre(String id) throws UserInputProcessException;
     void getAllBooks();
     void getAllGenres();
     void getAllAuthors();
-    void addComment(Long bookId, Comment comment) throws UserInputProcessException;
+    void addComment(String bookId, Comment comment) throws UserInputProcessException;
     void getAllComments();
-    void getCommentsByBookId(long bookId);
+    void getCommentsByBookId(String bookId);
 }

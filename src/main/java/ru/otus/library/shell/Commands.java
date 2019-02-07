@@ -19,7 +19,7 @@ public class Commands {
     }
 
     @ShellMethod("Getting book by id")
-    public void getBook(@ShellOption long id) {
+    public void getBook(@ShellOption String id) {
         try {
             this.inputService.getBook(id);
         } catch (UserInputProcessException ex) {
@@ -28,7 +28,7 @@ public class Commands {
     }
 
     @ShellMethod("Getting author by id")
-    public void getAuthor(@ShellOption long id) {
+    public void getAuthor(@ShellOption String id) {
         try {
             this.inputService.getAuthor(id);
         } catch (UserInputProcessException ex) {
@@ -37,7 +37,7 @@ public class Commands {
     }
 
     @ShellMethod("Getting genre by id")
-    public void getGenre(@ShellOption long id) {
+    public void getGenre(@ShellOption String id) {
         try {
             this.inputService.getGenre(id);
         } catch (UserInputProcessException ex) {
@@ -73,7 +73,7 @@ public class Commands {
     }
 
     @ShellMethod("Editing book")
-    public void editBook(@ShellOption long id,
+    public void editBook(@ShellOption String id,
                          @ShellOption String name,
                          @ShellOption Genre genre,
                          @ShellOption Author author) {
@@ -92,14 +92,14 @@ public class Commands {
     }
 
     @ShellMethod("Editing author")
-    public void editAuthor(@ShellOption long id,
+    public void editAuthor(@ShellOption String id,
                            @ShellOption String name) {
         Author author = new Author(id, name);
         this.inputService.editAuthor(author);
     }
 
     @ShellMethod("Editing genre")
-    public void editGenre(@ShellOption long id,
+    public void editGenre(@ShellOption String id,
                           @ShellOption String name) {
         Genre genre = new Genre(id, name);
         this.inputService.editGenre(genre);
@@ -112,7 +112,7 @@ public class Commands {
     }
 
     @ShellMethod("Adding comment")
-    public void addComment(@ShellOption long bookId,
+    public void addComment(@ShellOption String bookId,
                            @ShellOption String text) {
         Comment comment = new Comment(text);
         try {
@@ -128,7 +128,7 @@ public class Commands {
     }
 
     @ShellMethod("Getting comments by book id")
-    public void getComments(@ShellOption long bookId) {
+    public void getComments(@ShellOption String bookId) {
         this.inputService.getCommentsByBookId(bookId);
     }
 }

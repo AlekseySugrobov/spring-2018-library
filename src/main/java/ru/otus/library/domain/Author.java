@@ -1,21 +1,18 @@
 package ru.otus.library.domain;
 
 import lombok.*;
-
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
 @ToString
-@Table(name = "authors")
+@Document(collection = "authors")
 public class Author {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "author-generator")
-    @SequenceGenerator(name = "author-generator", sequenceName = "author_seq", allocationSize = 1)
-    private Long id;
+    private String id;
     private String name;
 
     public Author(String name) {
