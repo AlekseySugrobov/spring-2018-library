@@ -24,6 +24,9 @@ public class CascadeSaveMongoEventListener extends AbstractMongoEventListener<Ob
             ReflectionUtils.makeAccessible(field);
             if (field.isAnnotationPresent(DBRef.class) && field.isAnnotationPresent(CascadeSave.class)) {
                 final Object fieldValue = field.get(source);
+                if (Objects.isNull(fieldValue)) {
+                    return;
+                }
                 DbRefFieldCallback callback = new DbRefFieldCallback();
                 ReflectionUtils.doWithFields(fieldValue.getClass(), callback);
                 if (!callback.isIdFound()) {

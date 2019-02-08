@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8"/>
+  <title>List of all persons</title>
+  <style type="text/css">
+    body {
+      padding: 50px;
+    }
+
+    .authors {
+      width: 100%
+    }
+
+    .authors, .authors td {
+      border: 1px solid lightgray;
+      padding: 5px;
+    }
+  </style>
+</head>
+<body>
+<h1>Authors:</h1>
+<a th:href="@{/authors/create}">Add author</a>
+<table class="authors">
+  <thead>
+  <tr>
+    <th width="30%">ID</th>
+    <th width="60%">Name</th>
+    <th width="10%">Action</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="author: ${authors}">
+    <td th:text="${author.id}"></td>
+    <td th:text="${author.name}"></td>
+    <td>
+      <a th:href="@{/authors/edit(id=${author.id})}">Edit</a>
+      <a th:href="@{/authors/delete(id=${author.id})}">Delete</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+<a th:href="@{/}">To main page</a>
+</body>
+</html>
