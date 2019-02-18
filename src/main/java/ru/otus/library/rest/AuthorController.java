@@ -1,14 +1,15 @@
 package ru.otus.library.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.library.domain.Author;
+import ru.otus.library.exception.LibraryDataException;
 import ru.otus.library.service.AuthorService;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/authors")
 public class AuthorController {
     private final AuthorService authorService;
@@ -17,36 +18,35 @@ public class AuthorController {
         this.authorService = authorService;
     }
 
-    @GetMapping("/list")
-    public String listAuthors(Model model) {
+    @GetMapping
+    public ResponseEntity listAuthors() {
         List<Author> authors = authorService.findAll();
-        model.addAttribute("authors", authors);
-        return "authors/list";
+        return ResponseEntity.status(HttpStatus.OK).body(authors);
     }
 
-    @GetMapping("/edit")
-    public String getAuthor(@RequestParam("id") String id, Model model) {
-        Author author = authorService.findById(id);
-        model.addAttribute("author", author);
-        return "authors/edit";
-    }
-
-    @GetMapping("/create")
-    public String createAuthor(Model model) {
-        Author author = new Author();
-        model.addAttribute("author", author);
-        return "authors/edit";
+    @GetMapping("/{id}")
+    public ResponseEntity getAuthor(@PathVariable String id) {
+        try {
+            Author author = authorService.findById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(author);
+        } catch (LibraryDataException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }
 
     @PostMapping("/edit")
-    public String editAuthor(@ModelAttribute Author author) {
+    public ResponseEntity editAuthor(@RequestBody Author author) {
         authorService.save(author);
-        return "redirect:/authors/list";
+        return ResponseEntity.status(HttpStatus.OK).body(author);
     }
 
-    @GetMapping("/delete")
-    public String deleteAuthor(@RequestParam("id") String id) {
-        authorService.delete(id);
-        return "redirect:/authors/list";
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteAuthor(@PathVariable String id) {
+        try {
+            authorService.delete(id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (LibraryDataException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }
 }

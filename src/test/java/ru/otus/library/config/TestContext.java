@@ -1,12 +1,9 @@
 package ru.otus.library.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.otus.library.dao.AuthorDAO;
-import ru.otus.library.dao.BookDAO;
-import ru.otus.library.dao.GenreDAO;
-import ru.otus.library.domain.Author;
 import ru.otus.library.service.AuthorService;
 import ru.otus.library.service.BookService;
 import ru.otus.library.service.GenreService;
@@ -26,5 +23,10 @@ public class TestContext {
     @Bean
     public BookService bookService() {
         return Mockito.mock(BookService.class);
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
     }
 }

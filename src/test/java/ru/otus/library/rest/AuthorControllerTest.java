@@ -1,5 +1,6 @@
 package ru.otus.library.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,8 +22,7 @@ import ru.otus.library.service.AuthorService;
 import java.util.Collections;
 
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -33,6 +34,8 @@ class AuthorControllerTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private AuthorService authorService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
 
@@ -44,53 +47,33 @@ class AuthorControllerTest {
     @Test
     @DisplayName("Тест получения списка авторов")
     void listAuthors() throws Exception {
-        when(authorService.findAll()).thenReturn(Collections.singletonList(new Author("author1")));
-        this.mockMvc.perform(get("/authors/list"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("authors"))
-                .andExpect(view().name("authors/list"));
+        this.mockMvc.perform(get("/authors/"))
+                .andExpect(status().isOk());
         verify(authorService, times(1)).findAll();
     }
 
     @Test
     @DisplayName("Тест получения автора по ID")
     void getAuthor() throws Exception {
-        Author author = new Author();
-        author.setId("123");
-        author.setName("123");
-        when(authorService.findById("123")).thenReturn(author);
-        this.mockMvc.perform(get("/authors/edit?id=123"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("author"))
-                .andExpect(view().name("authors/edit"));
+        this.mockMvc.perform(get("/authors/123"))
+                .andExpect(status().isOk());
         verify(authorService, times(1)).findById(Mockito.any());
-    }
-
-    @Test
-    @DisplayName("Тест создания автора")
-    void createAuthor() throws Exception {
-        this.mockMvc.perform(get("/authors/create"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("author"))
-                .andExpect(view().name("authors/edit"));
-        verifyZeroInteractions(authorService);
     }
 
     @Test
     @DisplayName("Тест редактирования автора")
     void editAuthor() throws Exception {
-        this.mockMvc.perform(post("/authors/edit"))
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/authors/list"));
+        Author author = new Author("new-name");
+        this.mockMvc.perform(post("/authors/edit").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(author)))
+                .andExpect(status().isOk());
         verify(authorService, times(1)).save(Mockito.any());
     }
 
     @Test
     @DisplayName("Тест удаления автора")
     void deleteAuthor() throws Exception {
-        this.mockMvc.perform(get("/authors/delete?id=123"))
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/authors/list"));
+        this.mockMvc.perform(delete("/authors/123"))
+                .andExpect(status().isOk());
         verify(authorService, times(1)).delete(Mockito.any());
     }
 }

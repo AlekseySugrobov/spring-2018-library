@@ -1,7 +1,7 @@
 package ru.otus.library.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.StringUtils;
 import ru.otus.library.dao.AuthorDAO;
 import ru.otus.library.dao.BookDAO;
 import ru.otus.library.dao.GenreDAO;
@@ -35,7 +35,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public void save(Book book) {
-        if (StringUtils.isEmptyOrWhitespace(book.getId())) {
+        if (StringUtils.isEmpty(book.getId())) {
             book.setId(null);
         }
         book.setAuthor(authorDAO.findById(book.getAuthor().getId())
