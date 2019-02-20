@@ -1,5 +1,6 @@
 package ru.otus.library.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +36,8 @@ class GenreControllerTest {
     private WebApplicationContext webApplicationContext;
     @Autowired
     private GenreService genreService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private MockMvc mockMvc;
 
@@ -45,43 +49,25 @@ class GenreControllerTest {
     @Test
     @DisplayName("Тест получения списка жанров")
     void listGenres() throws Exception {
-        when(genreService.findAll()).thenReturn(Collections.singletonList(new Genre("genre1")));
-        this.mockMvc.perform(get("/genres/list"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("genres"))
-                .andExpect(view().name("genres/list"));
+        this.mockMvc.perform(get("/genres/"))
+                .andExpect(status().isOk());
         verify(genreService, times(1)).findAll();
     }
 
     @Test
     @DisplayName("Тест получения жанра по ID")
     void getGenre() throws Exception {
-        Genre genre = new Genre();
-        genre.setId("123");
-        genre.setName("123");
-        when(genreService.findById("123")).thenReturn(genre);
-        this.mockMvc.perform(get("/genres/edit?id=123"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("genre"))
-                .andExpect(view().name("genres/edit"));
+        this.mockMvc.perform(get("/genres/123"))
+                .andExpect(status().isOk());
         verify(genreService, times(1)).findById(Mockito.any());
-    }
-
-    @Test
-    @DisplayName("Тест создания жанра")
-    void createGenre() throws Exception {
-        this.mockMvc.perform(get("/genres/create"))
-                .andExpect(status().isOk())
-                .andExpect(model().attributeExists("genre"))
-                .andExpect(view().name("genres/edit"));
     }
 
     @Test
     @DisplayName("Тест редактирования жанра")
     void editGenre() throws Exception {
-        this.mockMvc.perform(post("/genres/edit"))
-                .andExpect(status().isFound())
-                .andExpect(view().name("redirect:/genres/list"));
+        Genre genre = new Genre("new genre");
+        this.mockMvc.perform(post("/genres/edit").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(genre)))
+                .andExpect(status().isOk());
         verify(genreService, times(1)).save(Mockito.any());
     }
 }

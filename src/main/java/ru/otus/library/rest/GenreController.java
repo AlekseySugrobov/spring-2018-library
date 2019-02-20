@@ -1,14 +1,15 @@
 package ru.otus.library.rest;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.library.domain.Genre;
+import ru.otus.library.exception.LibraryDataException;
 import ru.otus.library.service.GenreService;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/genres")
 public class GenreController {
     private final GenreService genreService;
@@ -17,30 +18,29 @@ public class GenreController {
         this.genreService = genreService;
     }
 
-    @GetMapping("/list")
-    public String listGenres(Model model) {
+    @GetMapping
+    public ResponseEntity listGenres() {
         List<Genre> genres = genreService.findAll();
-        model.addAttribute("genres", genres);
-        return "genres/list";
+        return ResponseEntity.status(HttpStatus.OK).body(genres);
     }
 
-    @GetMapping("/edit")
-    public String getGenre(@RequestParam("id") String id, Model model) {
-        Genre genre = genreService.findById(id);
-        model.addAttribute("genre", genre);
-        return "genres/edit";
-    }
-
-    @GetMapping("/create")
-    public String createGenre(Model model) {
-        Genre genre = new Genre();
-        model.addAttribute("genre", genre);
-        return "genres/edit";
+    @GetMapping("/{id}")
+    public ResponseEntity getGenre(@PathVariable String id) {
+        try {
+            Genre genre = genreService.findById(id);
+            return ResponseEntity.status(HttpStatus.OK).body(genre);
+        } catch (LibraryDataException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }
 
     @PostMapping("/edit")
-    public String editGenre(@ModelAttribute Genre genre) {
-        genreService.save(genre);
-        return "redirect:/genres/list";
+    public ResponseEntity editGenre(@RequestBody Genre genre) {
+        try {
+            genreService.save(genre);
+            return ResponseEntity.status(HttpStatus.OK).body(genre);
+        } catch (LibraryDataException ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+        }
     }
 }

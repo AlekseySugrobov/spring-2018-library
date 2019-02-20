@@ -1,7 +1,7 @@
 package ru.otus.library.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.StringUtils;
 import ru.otus.library.dao.GenreDAO;
 import ru.otus.library.domain.Genre;
 import ru.otus.library.exception.LibraryDataException;
@@ -30,7 +30,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public void save(Genre genre) {
-        if (StringUtils.isEmptyOrWhitespace(genre.getId())) {
+        if (StringUtils.isBlank(genre.getId())) {
             genre.setId(null);
         }
         genreDAO.save(genre);

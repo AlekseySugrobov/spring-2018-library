@@ -1,7 +1,7 @@
 package ru.otus.library.service.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.StringUtils;
 import ru.otus.library.dao.AuthorDAO;
 import ru.otus.library.domain.Author;
 import ru.otus.library.exception.LibraryDataException;
@@ -30,7 +30,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void save(Author author) {
-        if (StringUtils.isEmptyOrWhitespace(author.getId())) {
+        if (StringUtils.isEmpty(author.getId())) {
             author.setId(null);
         }
         authorDAO.save(author);
@@ -38,7 +38,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void delete(String id) {
-        if (StringUtils.isEmptyOrWhitespace(id)) {
+        if (StringUtils.isEmpty(id)) {
             throw new LibraryDataException("Empty id");
         }
         authorDAO.deleteById(id);
