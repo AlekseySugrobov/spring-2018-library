@@ -1,13 +1,11 @@
 package ru.otus.library.rest;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 import ru.otus.library.domain.Author;
-import ru.otus.library.exception.LibraryDataException;
 import ru.otus.library.service.AuthorService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/authors")
@@ -19,34 +17,33 @@ public class AuthorController {
     }
 
     @GetMapping
-    public ResponseEntity listAuthors() {
-        List<Author> authors = authorService.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(authors);
+    public Flux<Author> listAuthors() {
+        return authorService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getAuthor(@PathVariable String id) {
-        try {
-            Author author = authorService.findById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(author);
-        } catch (LibraryDataException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-        }
+    public Mono<ResponseEntity<Author>> getAuthor(@PathVariable String id) {
+        return Mono
+                .just(id)
+                .flatMap(this.authorService::findById)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/edit")
-    public ResponseEntity editAuthor(@RequestBody Author author) {
-        authorService.save(author);
-        return ResponseEntity.status(HttpStatus.OK).body(author);
+    public Mono<ResponseEntity<Author>> editAuthor(@RequestBody Author author) {
+        return Mono
+                .just(author)
+                .flatMap(this.authorService::save)
+                .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteAuthor(@PathVariable String id) {
-        try {
-            authorService.delete(id);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (LibraryDataException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-        }
+    public Mono<ResponseEntity<Void>> deleteAuthor(@PathVariable String id) {
+        return Mono
+                .just(id)
+                .flatMap(this.authorService::delete)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }

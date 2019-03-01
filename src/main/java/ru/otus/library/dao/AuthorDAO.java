@@ -1,7 +1,9 @@
 package ru.otus.library.dao;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.stereotype.Repository;
 import ru.otus.library.domain.Author;
 
-public interface AuthorDAO extends MongoRepository<Author, String> {
+@Repository
+public interface AuthorDAO extends ReactiveMongoRepository<Author, String> {
 }
