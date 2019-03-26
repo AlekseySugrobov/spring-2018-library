@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Form based authentication</title>
+  </head>
+<body>
+
+<div>
+
+  <div style="margin-top:20px">
+    <div>
+      <form th:action="@{/login}" method="post">
+        <fieldset>
+          <h1>Please Sign In</h1>
+
+          <div th:if="${param.error}">
+            <div>
+              Invalid username and password.
+            </div>
+          </div>
+          <div th:if="${param.logout}">
+            <div>
+              You have been logged out.
+            </div>
+          </div>
+
+          <div>
+            <input type="text" name="username" id="username"
+                   placeholder="UserName" required="true" autofocus="true"/>
+          </div>
+          <div>
+            <input type="password" name="password" id="password"
+                   placeholder="Password" required="true"/>
+          </div>
+
+          <div>
+            <div>
+              <input type="submit" value="Sign In"/>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
